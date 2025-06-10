@@ -1,41 +1,49 @@
 "use client";
 
 import React, { FC } from "react";
-import { BsBell, BsBookmark, BsTwitter } from "react-icons/bs";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
-  BiEnvelope,
-  BiSearch,
+  BsTwitter,
+  BsBookmark,
+} from "react-icons/bs";
+import {
   BiSolidHomeCircle,
+  BiSearch,
+  BiEditAlt,
   BiUser,
 } from "react-icons/bi";
-import { RiFileList2Line } from "react-icons/ri";
-import { FiUsers } from "react-icons/fi";
-import { VscVerified } from "react-icons/vsc";
-import { CgMoreO } from "react-icons/cg";
-import { ProfileCard } from "./ProfileButton";
-import Link from "next/link";
-import { useGetCurrentUser } from "../hooks/user";
+import { RiNotification2Line } from "react-icons/ri";
+import { HiOutlineUsers } from "react-icons/hi";
+import { MdOutlineArticle } from "react-icons/md";
+import { FiLogOut } from "react-icons/fi";
 
-type sidebarElementType = {
+type SidebarElementType = {
   icon: JSX.Element;
   text: string;
-  link: string;
+  link?: string;
+  onClick?: () => void;
 };
 
 const Sidebar: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
-  const { user } = useGetCurrentUser();
-  const sidebarElements: sidebarElementType[] = [
+  const router = useRouter();
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+  };
+
+  const sidebarElements: SidebarElementType[] = [
     { icon: <BiSolidHomeCircle />, text: "Home", link: "/" },
-    { icon: <BiSearch />, text: "Explore", link: "/" },
-    { icon: <BsBell />, text: "Notifications", link: "/" },
-    { icon: <BiEnvelope />, text: "Messages", link: "/" },
-    { icon: <RiFileList2Line />, text: "Lists", link: "/" },
-    { icon: <BsBookmark />, text: "Bookmarks", link: "/" },
-    { icon: <FiUsers />, text: "Communities", link: "/" },
-    { icon: <VscVerified />, text: "Verified", link: "/" },
-    { icon: <BiUser />, text: "Profile", link: `/${user?.id}` },
-    { icon: <CgMoreO />, text: "More", link: "/" },
+    { icon: <MdOutlineArticle />, text: "News", link: "/news" },
+    { icon: <BiSearch />, text: "Explore", link: "/explore" },
+    { icon: <BiEditAlt />, text: "Write", link: "/write" },
+    { icon: <RiNotification2Line />, text: "Notifications", link: "/notifications" },
+    { icon: <BsBookmark />, text: "Bookmarks", link: "/bookmarks" },
+    { icon: <HiOutlineUsers />, text: "Communities", link: "/communities" },
+    { icon: <BiUser />, text: "Profile", link: "/profile" },
+    { icon: <FiLogOut />, text: "Logout", onClick: handleLogout },
   ];
+
   return (
     <nav
       className={`${className} fixed bottom-0 flex w-full items-center border-t border-t-gray-600 p-2 md:relative md:flex md:flex-col md:border-t-0 lg:items-end`}
@@ -44,23 +52,35 @@ const Sidebar: FC<React.HTMLAttributes<HTMLDivElement>> = ({ className }) => {
         <div className="mb-2 hidden w-max rounded-full p-2 text-3xl transition-all hover:bg-gray-900 md:block">
           <BsTwitter />
         </div>
+
         <ul className="menuContainer flex justify-around py-1 md:block">
-          {sidebarElements.map((element) => (
-            <Link href={element.link} key={element.text}>
-              <li className="flex w-max cursor-pointer items-center justify-evenly gap-5 rounded-full p-2 transition-all  hover:bg-gray-900 md:my-4">
-                <span className="text-2xl">{element.icon}</span>
+          {sidebarElements.map(({ icon, text, link, onClick }) => {
+            const content = (
+              <li
+                className="flex w-max cursor-pointer items-center justify-evenly gap-5 rounded-full p-2 transition-all hover:bg-gray-900 md:my-4"
+                onClick={onClick}
+              >
+                <span className="text-2xl">{icon}</span>
                 <span className="hidden text-xl font-medium lg:block">
-                  {element.text}
+                  {text}
                 </span>
               </li>
-            </Link>
-          ))}
+            );
+
+            return link ? (
+              <Link href={link} key={text}>
+                {content}
+              </Link>
+            ) : (
+              <div key={text}>{content}</div>
+            );
+          })}
         </ul>
+
         <button className="hidden h-12 w-full max-w-[56rem] rounded-full bg-blue-500 py-2 font-medium text-white lg:block">
           Post
         </button>
       </div>
-      <ProfileCard className="absolute bottom-0 right-0 mb-4 hidden w-full max-w-fit items-center gap-2 md:flex" />
     </nav>
   );
 };

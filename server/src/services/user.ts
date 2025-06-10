@@ -1,5 +1,5 @@
 import axios from "axios";
-import { prismaClient } from "../client/db";
+import { prismaClient } from "../clients/db";
 import JWTService from "./jwt";
 
 interface GoogleTokenResult {

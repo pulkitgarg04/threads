@@ -1,8 +1,8 @@
 import JWT from "jsonwebtoken";
-import { User } from "@prisma/client";
+import { User } from "../generated/prisma";
 import { JWTUser } from "../interfaces";
 
-const JWT_SECRET = "Thr3ads@2025#";
+const JWT_SECRET = process.env.JWT_SECRET || "JWT_SECRET";
 
 class JWTService {
     public static generateTokenForUser(user: User) {
@@ -10,6 +10,7 @@ class JWTService {
             id: user?.id,
             email: user?.email,
         };
+        
         const token = JWT.sign(payload, JWT_SECRET);
         return token;
     }
